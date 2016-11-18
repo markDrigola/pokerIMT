@@ -17,19 +17,23 @@ function router(app, express) {
     app.get('/index', function (req, res) {
         res.render('pages/index');
     });
-    
-    // app.get('/header', function (req, res) {
-    //     res.render('template',
-    //         {page: "header",
-    //             title: "О нас",
-    //             user: {
-    //                 id: "12345",
-    //                 name: "vasia",
-    //                 fname: "petya"
-    //             }
-    //         }
-    //     )
-    // })
+
+    app.get('/tournaments', function (req, res) {
+        res.render('pages/tournaments');
+    });
+
+    app.get('/statistics', function (req, res) {
+        res.render('pages/statistics');
+    });
+
+    app.get('/rivers', function (req, res) {
+        res.render('pages/rivers');
+    });
+
+    app.get('/game', function (req, res) {
+        res.render('template', {page: "game",
+            title: "game"});
+    });
 }
 
 module.exports = router;

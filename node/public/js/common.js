@@ -1,6 +1,7 @@
 'use strict';
 (function () {
     $(document).on('ready',function () {
+
         //navs active 
         var navs = $('.navs');
 
@@ -12,6 +13,7 @@
         $('.navs').find('a').click(function (event) {
             event.preventDefault();
         });
+
         $('.navs').find('[href="/index"]').click(function () {
             $.ajax({
                 url: "/index",
@@ -20,6 +22,7 @@
                 $('.mainAllBg').html(data);
             });
         });
+
         $('.navs').find('[href="/about.html"]').click(function () {
             $.ajax({
                 url: "/about.html",
@@ -28,6 +31,40 @@
                 $('.mainAllBg').html(data);
             });
         });
+
+        $('.navs').find('[href="/tournaments"]').click(function () {
+            $.ajax({
+                url: "/tournaments",
+                async: true
+            }).done(function (data) {
+                $('.mainAllBg').html(data);
+            });
+        });
+
+        $('.navs').find('[href="/statistics"]').click(function () {
+            $.ajax({
+                url: "/statistics",
+                async: true
+            }).done(function (data) {
+                $('.mainAllBg').html(data);
+            });
+        });
+
+        $('.navs').find('[href="/rivers"]').click(function () {
+            $.ajax({
+                url: "/rivers",
+                async: true
+            }).done(function (data) {
+                $('.mainAllBg').html(data);
+            });
+        });
+
+        if(this.location.pathname == '/game') {
+            $('.mainAllBg').css({
+                'paddingTop': 0
+            })
+        }
+
 
         //>>>>>>>>>>>>>>>>>>ALL POKERS GAMES SCRIPT<<<<<<<<<<<<<<<<<<
         
