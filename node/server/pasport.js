@@ -4,6 +4,14 @@ var LocalStrategy   = require('passport-local').Strategy;
 // load up the user model
 var User            = require('../models/user');
 
+
+//delete All users sript
+User.find(function (err,user) {
+    for(var i = 0; i < user.length; i++) {
+        // user[i].remove();
+        console.log(user[i]);
+    }
+});
 // expose this function to our app using module.exports
 module.exports = function(passport) {
 

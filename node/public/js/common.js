@@ -2,6 +2,13 @@
 (function () {
     $(document).on('ready',function () {
 
+        //validator
+
+        _("#formValidSignUp").init({
+            email: "[name=email]",
+            password: "[name=password]"
+        });
+
         //navs active 
         var navs = $('.navs');
 

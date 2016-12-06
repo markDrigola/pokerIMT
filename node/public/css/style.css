@@ -40,6 +40,9 @@ html {
   font-weight: bold;
   outline: none !important;
   transition: all .3s;
+  text-align: center;
+  padding-top: 6px;
+  text-decoration: none !important;
 }
 /* line 46, ../sass/style.scss */
 .headerAll .header .formLogin .login:hover {
