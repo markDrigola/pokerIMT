@@ -44,6 +44,11 @@ html {
   padding-top: 6px;
   text-decoration: none !important;
 }
+
+.headerAll .header .formLogin .login a {
+  color: #fff;
+  text-decoration: none !important;
+}
 /* line 46, ../sass/style.scss */
 .headerAll .header .formLogin .login:hover {
   text-shadow: 0 0 6px white;
@@ -65,6 +70,11 @@ html {
   font-weight: bold;
   outline: none !important;
   transition: all .3s;
+}
+
+.headerAll .header .formLogin .registration a {
+  color: #fff;
+  text-decoration: none !important;
 }
 /* line 68, ../sass/style.scss */
 .headerAll .header .formLogin .registration:hover {
@@ -586,4 +596,12 @@ main.mainAllBg .mainAll .pokerInfo p {
   margin-left: auto;
   margin-right: auto;
   display: block;
+}
+
+.successInputValidators {
+  border: 1px solid greenyellow;
+}
+
+. {
+  border: 1px solid red;
 }

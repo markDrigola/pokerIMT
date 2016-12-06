@@ -85,6 +85,14 @@ function router(app, express, passport) {
         });
     });
 
+    app.get('/aboutNavs', isLoggedIn, function(req, res) {
+        res.render('pages/aboutNavs', {
+            user : req.user, // get the user out of session and pass to template
+            page: "aboutNavs",
+            title: "Личный кабинет"
+        });
+    });
+
     // =====================================
     // LOGOUT ==============================
     // =====================================
@@ -100,10 +108,8 @@ function isValid(req, res, next){
     if (validator(req,res)) {
         return next();
         res.redirect('/about');
-        console.log("router valid ok")
     } else {
         res.redirect('/signUp');
-        console.log("router valid no")
     }
 
 

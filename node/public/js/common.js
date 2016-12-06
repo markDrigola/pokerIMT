@@ -30,9 +30,9 @@
             });
         });
 
-        $('.navs').find('[href="/about.html"]').click(function () {
+        $('.navs').find('[href="/aboutNavs"]').click(function () {
             $.ajax({
-                url: "/about.html",
+                url: "/aboutNavs",
                 async: true
             }).done(function (data) {
                 $('.mainAllBg').html(data);
