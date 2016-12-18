@@ -605,3 +605,88 @@ main.mainAllBg .mainAll .pokerInfo p {
 . {
   border: 1px solid red;
 }
+
+.profile-button {
+  width: 200px;
+  float: left;
+  margin-top: 20px;
+  height: 44px;
+}
+
+.inputRead {
+  width: 100%;
+  border: 1px solid #ddd;
+  height: 43px;
+  padding-left: 12px;
+  font-size: 24px;
+  display: none;
+}
+
+.input-profile-all {
+  width: 100%;
+  border: none;
+  background: transparent;
+  outline: none !important;
+}
+
+.node-server-profile {
+  border-bottom: 2px solid #ddd;
+}
+
+#chatAll {
+  height: 400px;
+  background: #fff;
+}
+
+#messages {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  height: 374px;
+  max-height: 374px;
+  overflow-y: auto;
+}
+
+#messages li {
+  padding: 5px 10px;
+  font-size: 14px;
+}
+
+#messages li:nth-child(odd) {
+  background: #ddd;
+}
+
+.textAdd {
+  border: 2px solid #58d8d2;
+  width: 90%;
+  float: left;
+}
+
+.submitChat {
+  border: 2px solid #5899dc;
+  width: 10%;
+  float: left;
+  background: #5899dc;
+  color: #fff;
+  font-weight: bold;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

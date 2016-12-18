@@ -13,57 +13,34 @@
                 </div>
             </div>
             <div class="col-lg-4 personInfo">
-                <form id="formTel" method="POST">
-                <p class="personInfoText">Ф.И.О.</p>
-                <h3 class="personName">
-                    <%if(user.local.nick == undefined) {%>
-                    <input type="text" value=""  >
-                    <!--<form action="/formProfile" id="nameForm" method="POST">-->
-                        <!--<input type="text" value="Введите имя" name="nick">-->
-                        <!--<input type="submit">-->
-                    <!--</form>-->
-                    <%} else {%>
-                        <input type="text" value="<%= user.local.nick %>"  >
-                    <%}%>
-                    <button class="readNmae btn-style">
-                        <i class="fa fa-pencil" aria-hidden="true"></i>
-                    </button>
-                </h3>
-                <p class="personInfoText">Logo</p>
-                <h3 class="personLogo">
-                    <span>VaSaPoo</span>
-                    <button class="readNmae btn-style">
-                        <i class="fa fa-pencil" aria-hidden="true"></i>
-                    </button></h3>
-                <p class="personInfoText">Пароль</p>
-                <p class="personPasswd">
-
-                    <input type="password" value="">
-                    <button class="readNmae btn-style">
-                        <i class="fa fa-pencil" aria-hidden="true"></i>
-                    </button>
-                </p>
-                <p class="personInfoText">E-mail</p>
-                <p class="personEmail">
-                    <input type="email" name="email" value="<%= user.local.email %>">
-                    <button class="readNmae btn-style">
-                        <i class="fa fa-pencil" aria-hidden="true"></i>
-                    </button>
-                </p>
-                <p class="personInfoText">Телефон</p>
-                <p class="personTelephone">
-
-
-                            <input type="text" value="<%= user.local.tel %>" name="tel">
-                            <input type="submit">
-
-
-
-
-                    <button class="readNmae btn-style">
-                        <i class="fa fa-pencil" aria-hidden="true"></i>
-                    </button>
-                </p>
+                <form id="formProfile" method="POST">
+                    <div class="node-server-profile">
+                        <h3 class="personName">Ф.И.О.</h3>
+                        <input type="text" value="<%= user.local.fio %>"  class="inputRead" name="fio">
+                        <h3 class="personName profile-fio"><%= user.local.fio %></h3>
+                    </div>
+                    <div class="node-server-profile">
+                        <h3 class="personName">Logo</h3>
+                        <input type="text" value="<%= user.local.nick %>"  class="inputRead" name="nick">
+                        <h3 class="personName profile-nick"><%= user.local.nick %></h3>
+                    </div>
+                    <!--<div class="node-server-profile">-->
+                        <!--<h3 class="personName">Пароль</h3>-->
+                        <!--<input type="password" value="" class="inputRead" name="password">-->
+                    <!--</div>-->
+                    <div class="node-server-profile">
+                        <h3 class="personName">E-mail</h3>
+                        <input type="email" name="email" value="<%= user.local.email %>" class="inputRead">
+                        <h3 class="personName profile-email"><%= user.local.email %></h3>
+                    </div>
+                    <div class="node-server-profile">
+                        <h3 class="personName">Телефон</h3>
+                        <input type="text" value="<%= user.local.tel %>"  class="inputRead" name="tel" >
+                        <h3 class="personNam profile-tel"><%= user.local.tel %></h3>
+                    </div>
+                    <div class="clearfix"></div>
+                    <button type="submit" class="btn-style profile-button read-profile-button">Редактировать</button>
+                    <input type="submit" class="btn-style profile-button post-read-profile">
                 </form>
             </div>
         </div>

@@ -1,6 +1,6 @@
 var express  = require('express');
 var app      = express();
-
+var http = require('http').Server(app);
 var mongoose = require('mongoose');
 var passport = require('passport');
 var flash    = require('connect-flash');
@@ -10,7 +10,7 @@ var morgan       = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser   = require('body-parser');
 var session      = require('express-session');
-
+var io = require('socket.io')(http);
 var configDB = require('../node/../config/database.js');
 
 // configuration ===============================================================
@@ -36,10 +36,10 @@ app.use(flash()); // use connect-flash for flash messages stored in session
 require('./pasport')(passport);
 
 function server(config) {
-    app.listen(config.get('port'), function () {
+    http.listen(config.get('port'), function () {
         console.log('The magic happens on port ' + config.get('port'));
     });
-    router(app, express, passport);
+    router(app, express, passport,io);
 }
 
 module.exports = server;

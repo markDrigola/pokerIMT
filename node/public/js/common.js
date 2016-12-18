@@ -17,7 +17,7 @@
             $(this).addClass('activeLink');
         });
 
-        $('.navs').find('a').click(function (event) {
+        $('.navs').find('a.stoped-prevent').on('click',function (event) {
             event.preventDefault();
         });
 
@@ -30,14 +30,14 @@
             });
         });
 
-        $('.navs').find('[href="/about"]').click(function () {
-            $.ajax({
-                url: "/about",
-                async: true
-            }).done(function (data) {
-                $('.mainAllBg').html(data);
-            });
-        });
+        // $('.navs').find('[href="/profile"]').click(function () {
+        //     $.ajax({
+        //         url: "/profile",
+        //         async: true
+        //     }).done(function (data) {
+        //         $('.mainAllBg').html(data);
+        //     });
+        // });
 
         $('.navs').find('[href="/tournaments"]').click(function () {
             $.ajax({
@@ -72,18 +72,59 @@
             })
         }
 
-        $('#formTel').on('submit', function (event) {
+        if(this.location.pathname == '/profile') {
+            $('.navs').children().removeClass('activeLink');
+            $('[href="/profile"]').parent().addClass('activeLink');
+        }
+
+        $('#formProfile').on('submit', function (event) {
             event.preventDefault();
 
-            $.post("/profile", {
+            $.post("/formProfile", {
                 email: $(this).find("[name=email]").val(),
-                password: $(this).find("[name=password]").val(),
-                tel: $(this).find("[name=tel]").val(),
+                fio: $(this).find("[name=fio]").val(),
+                nick: $(this).find("[name=nick]").val(),
+                // password: $(this).find("[name=password]").val(),
+                tel: $(this).find("[name=tel]").val()
             }).done( function (data) {
-                console.log(data);
+                $('.profile-fio').text(data.local.fio);
+                $('.profile-email').text(data.local.email);
+                $('.profile-nick').text(data.local.nick);
+                $('.profile-tel').text(data.local.tel);
             })
         });
 
+        $('.read-profile-button').on('click', function (event) {
+            event.preventDefault();
+
+            $(this).hide();
+            $('.inputRead').show();
+        });
+
+        $('.post-read-profile').on('click', function () {
+            $('.inputRead').hide();
+            $('.read-profile-button').show();
+        });
+
+
+
+
+
+
+
+
+
+        var socket = io('/game');
+        $('.addedMessage').submit(function(){
+            socket.emit('chat message', $('.textAdd').val(), socket.id);
+            $('.textAdd').val('');
+            return false;
+        });
+        
+        socket.on('chat message', function(msg, nick){
+            console.log(msg)
+            $('#messages').append($('<li>').text(nick + ': ' + msg));
+        });
 
         //>>>>>>>>>>>>>>>>>>ALL POKERS GAMES SCRIPT<<<<<<<<<<<<<<<<<<
         

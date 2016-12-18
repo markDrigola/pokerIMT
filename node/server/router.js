@@ -1,6 +1,6 @@
 var User = require('../models/user');
 
-function router(app, express, passport) {
+function router(app, express, passport,io) {
     //связываем express vs ejs
     app.set('view engine', 'ejs');
     app.use(express.static(__dirname + '/../public'));
@@ -11,10 +11,6 @@ function router(app, express, passport) {
               title: "Главная"}
         )
     });
-
-    // app.get('/about.html', function (req, res) {
-    //     res.render('pages/about');
-    // });
 
     app.get('/index', function (req, res) {
         res.render('pages/index');
@@ -32,12 +28,48 @@ function router(app, express, passport) {
         res.render('pages/rivers');
     });
 
+
+
     app.get('/game', isLoggedIn,  function (req, res) {
         res.render('template', {page: "game",
             title: "game"});
     });
+    var nsp = io.of('/game');
+    io.on('connection', function(socket){
+        socket.on('chat message', function(msg){
+            var thisUser;
+            User.findOne({_id:req.user._id}, function(err, user) {
 
+                if(user.local.nick == null || user.local.nick == undefined) {
+                    thisUser = 'Anonimus user'
+                } else {
+                    thisUser = user.local.nick;
+                }
+            });
+            io.emit('chat message', msg, thisUser);
+        });
+        socket.on('disconnect', function(){
+            console.log('user disconnected');
+        });
+    });
 
+    function obtainedUser(req, res) {
+
+        User.findOne({_id:req.user._id}, function(err, user) {
+            var thisUser;
+            if (err) {
+                res.send("error");
+                return;
+            }
+            if(user.local.nick == null || user.local.nick == undefined) {
+                thisUser = 'Anonimus user'
+            } else {
+                thisUser = user.local.nick;
+            }
+            return thisUser;
+        });
+
+    }
 
 // =====================================
     // LOGIN ===============================
@@ -80,23 +112,22 @@ function router(app, express, passport) {
     // we will want this protected so you have to be logged in to visit
     // we will use route middleware to verify this (the isLoggedIn function)
     app.get('/profile', isLoggedIn, function(req, res) {
-        User.find(req.user._id,function (err, usersThis) {
-
+        User.findOne({_id:req.user._id},function (err, usersThis) {
             res.render('template', {
-                user : usersThis[0], // get the user out of session and pass to template
+                user : usersThis, // get the user out of session and pass to template
                 page: "profile",
                 title: "Личный кабинет"
             });
         });
     });
 
-    app.post('/formProfile', function (req, res) {
-        User.find(req.user._id,function (err, usersThis) {
-            usersThis[0].local.nick = req.body.nick;
-            usersThis[0].save();
-        });
-        // res.redirect('/profile')
-    });
+    // app.post('/formProfile', function (req, res) {
+    //     User.find(req.user._id,function (err, usersThis) {
+    //         usersThis[0].local.nick = req.body.nick;
+    //         usersThis[0].save();
+    //     });
+    //     // res.redirect('/profile')
+    // });
 
     // app.post('/profile', function (req, res) {
     //     console.log(req.body);
@@ -111,29 +142,30 @@ function router(app, express, passport) {
     //     });
     // });
 
-    app.post('/profile', isLoggedIn, function(req, res) {
+    app.post('/formProfile', isLoggedIn, function(req, res) {
         User.findOne({_id:req.user._id}, function(err, user){
-            console.log(user)
             if (err) {
                 res.send("error");
                 return;
             }
-            console.log('post ' + req.body.tel)
             user.local.email = req.body.email;
             // user.local.password = user.generateHash(req.body.password);
             user.local.nick = req.body.nick;
             user.local.tel = req.body.tel;
-            console.log(user)
+            user.local.fio = req.body.fio;
             user.save(function(err){
                 if(!err){
-                    res.send("ok");
+                    res.send(user);
                     return;
                 }
                 res.send('error');
-            })
+            });
             console.log(user)
         })
     });
+    // User.find(function (err, userAll) {
+    //     console.log(userAll)
+    // })
         // User.find(req.user._id,function (err, usersThis) {
         //     // console.log(usersThis[0])
         //
@@ -166,6 +198,10 @@ function router(app, express, passport) {
         req.logout();
         res.redirect('/');
     });
+
+    //CHAT
+
+
 
 }
 var validator = require("../lib/validator.js");
