@@ -30,9 +30,9 @@
             });
         });
 
-        $('.navs').find('[href="/aboutNavs"]').click(function () {
+        $('.navs').find('[href="/about"]').click(function () {
             $.ajax({
-                url: "/aboutNavs",
+                url: "/about",
                 async: true
             }).done(function (data) {
                 $('.mainAllBg').html(data);
@@ -71,6 +71,18 @@
                 'paddingTop': 0
             })
         }
+
+        $('#formTel').on('submit', function (event) {
+            event.preventDefault();
+
+            $.post("/profile", {
+                email: $(this).find("[name=email]").val(),
+                password: $(this).find("[name=password]").val(),
+                tel: $(this).find("[name=tel]").val(),
+            }).done( function (data) {
+                console.log(data);
+            })
+        });
 
 
         //>>>>>>>>>>>>>>>>>>ALL POKERS GAMES SCRIPT<<<<<<<<<<<<<<<<<<

@@ -1,3 +1,5 @@
+var User = require('../models/user');
+
 function router(app, express, passport) {
     //связываем express vs ejs
     app.set('view engine', 'ejs');
@@ -48,7 +50,7 @@ function router(app, express, passport) {
     });
 
     app.post('/logined', passport.authenticate('local-login', {
-        successRedirect : '/about', // redirect to the secure profile section
+        successRedirect : '/profile', // redirect to the secure profile section
         failureRedirect : '/logined', // redirect back to the signup page if there is an error
         failureFlash : true // allow flash messages
     }));
@@ -65,7 +67,7 @@ function router(app, express, passport) {
 
     // process the login form
     app.post('/signUp', isValid, passport.authenticate('local-signup', {
-        successRedirect : '/about', // redirect to the secure profile section
+        successRedirect : '/profile', // redirect to the secure profile section
         failureRedirect : '/signUp', // redirect back to the signup page if there is an error
         failureFlash : true // allow flash messages
     }));
@@ -77,21 +79,85 @@ function router(app, express, passport) {
     // =====================================
     // we will want this protected so you have to be logged in to visit
     // we will use route middleware to verify this (the isLoggedIn function)
-    app.get('/about', isLoggedIn, function(req, res) {
-        res.render('template', {
-            user : req.user, // get the user out of session and pass to template
-            page: "about",
-            title: "Личный кабинет"
+    app.get('/profile', isLoggedIn, function(req, res) {
+        User.find(req.user._id,function (err, usersThis) {
+
+            res.render('template', {
+                user : usersThis[0], // get the user out of session and pass to template
+                page: "profile",
+                title: "Личный кабинет"
+            });
         });
     });
 
-    app.get('/aboutNavs', isLoggedIn, function(req, res) {
-        res.render('pages/aboutNavs', {
-            user : req.user, // get the user out of session and pass to template
-            page: "aboutNavs",
-            title: "Личный кабинет"
+    app.post('/formProfile', function (req, res) {
+        User.find(req.user._id,function (err, usersThis) {
+            usersThis[0].local.nick = req.body.nick;
+            usersThis[0].save();
         });
+        // res.redirect('/profile')
     });
+
+    // app.post('/profile', function (req, res) {
+    //     console.log(req.body);
+    //     User.find(req.user._id,function (err, usersThis) {
+    //     usersThis[0].local.tel = req.body.tel;
+    //     usersThis[0].local.password = req.body.tel;
+    //         usersThis[0].save(function (err) {
+    //             if (!err) {
+    //                 res.send('ok');
+    //             }
+    //         });
+    //     });
+    // });
+
+    app.post('/profile', isLoggedIn, function(req, res) {
+        User.findOne({_id:req.user._id}, function(err, user){
+            console.log(user)
+            if (err) {
+                res.send("error");
+                return;
+            }
+            console.log('post ' + req.body.tel)
+            user.local.email = req.body.email;
+            // user.local.password = user.generateHash(req.body.password);
+            user.local.nick = req.body.nick;
+            user.local.tel = req.body.tel;
+            console.log(user)
+            user.save(function(err){
+                if(!err){
+                    res.send("ok");
+                    return;
+                }
+                res.send('error');
+            })
+            console.log(user)
+        })
+    });
+        // User.find(req.user._id,function (err, usersThis) {
+        //     // console.log(usersThis[0])
+        //
+        //     usersThis[0].local.tel = req.body.tel;
+        //     usersThis[0].save(function (err) {
+        //         if (!err) {
+        //             res.render('template', {
+        //                 user : usersThis[0], // get the user out of session and pass to template
+        //                 page: "profile",
+        //                 title: "Личный кабинет"
+        //             });
+        //         }
+        //     });
+        // });
+    // });
+
+
+    // app.get('/aboutNavs', isLoggedIn, function(req, res) {
+    //     res.render('pages/aboutNavs', {
+    //         user : req.user, // get the user out of session and pass to template
+    //         page: "aboutNavs",
+    //         title: "Личный кабинет"
+    //     });
+    // });
 
     // =====================================
     // LOGOUT ==============================
@@ -107,7 +173,7 @@ var validator = require("../lib/validator.js");
 function isValid(req, res, next){
     if (validator(req,res)) {
         return next();
-        res.redirect('/about');
+        res.redirect('/profile');
     } else {
         res.redirect('/signUp');
     }
