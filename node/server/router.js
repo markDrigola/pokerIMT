@@ -30,28 +30,43 @@ function router(app, express, passport,io) {
 
 
 
-    app.get('/game', isLoggedIn,  function (req, res) {
-        res.render('template', {page: "game",
-            title: "game"});
-    });
-    var nsp = io.of('/game');
-    io.on('connection', function(socket){
-        socket.on('chat message', function(msg){
-            var thisUser;
-            User.findOne({_id:req.user._id}, function(err, user) {
+        app.get('/game', isLoggedIn,  function (req, res) {
+            // function ReqUser(req) {
+            //     this.req = req;
+            // }
+            //
+            // ReqUser.prototype.returnReq = function () {
+            //     return console.log(this.req);
+            // };
+            // var tmp = new ReqUser(req);
+            // // tmp.returnReq();
+            res.render('template', {page: "game",
+                title: "game"});
 
-                if(user.local.nick == null || user.local.nick == undefined) {
-                    thisUser = 'Anonimus user'
-                } else {
-                    thisUser = user.local.nick;
-                }
+            chats(req);
+        });
+// var
+    var chats = function (req) {
+        io.on('connection', function(socket){
+            socket.on('chat message', function(msg){
+                var thisUser;
+                User.findOne({_id:req.user._id}, function(err, user) {
+
+                    if(user.local.nick == null || user.local.nick == undefined) {
+                        thisUser = 'Anonimus user'
+                    } else {
+                        thisUser = user.local.nick;
+                    }
+                });
+                io.emit('chat message', msg, thisUser);
             });
-            io.emit('chat message', msg, thisUser);
+            socket.on('disconnect', function(){
+                console.log('user disconnected');
+            });
         });
-        socket.on('disconnect', function(){
-            console.log('user disconnected');
-        });
-    });
+    };
+
+
 
     function obtainedUser(req, res) {
 

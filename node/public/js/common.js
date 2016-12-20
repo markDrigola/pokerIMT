@@ -114,7 +114,7 @@
 
 
 
-        var socket = io('/game');
+        var socket = io();
         $('.addedMessage').submit(function(){
             socket.emit('chat message', $('.textAdd').val(), socket.id);
             $('.textAdd').val('');
