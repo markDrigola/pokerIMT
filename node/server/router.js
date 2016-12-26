@@ -4,7 +4,6 @@ function router(app, express, passport,io) {
     //связываем express vs ejs
     app.set('view engine', 'ejs');
     app.use(express.static(__dirname + '/../public'));
-
     app.get('/', function (req, res) {
         res.render('template',
             { page: "main",
@@ -31,40 +30,33 @@ function router(app, express, passport,io) {
 
 
         app.get('/game', isLoggedIn,  function (req, res) {
-            // function ReqUser(req) {
-            //     this.req = req;
-            // }
-            //
-            // ReqUser.prototype.returnReq = function () {
-            //     return console.log(this.req);
-            // };
-            // var tmp = new ReqUser(req);
-            // // tmp.returnReq();
+            var resetNickUser = req.user.local.nick;
+
+            if(resetNickUser === undefined || resetNickUser === '') {
+                res.cookie('personId', decodeURIComponent('User not Logo'));
+            } else {
+                res.cookie('personId', decodeURIComponent(resetNickUser));
+            }
+
             res.render('template', {page: "game",
                 title: "game"});
-
-            chats(req);
         });
-// var
-    var chats = function (req) {
-        io.on('connection', function(socket){
-            socket.on('chat message', function(msg){
-                var thisUser;
-                User.findOne({_id:req.user._id}, function(err, user) {
 
-                    if(user.local.nick == null || user.local.nick == undefined) {
-                        thisUser = 'Anonimus user'
-                    } else {
-                        thisUser = user.local.nick;
-                    }
-                });
-                io.emit('chat message', msg, thisUser);
+// var
+        io.on('connection', function(socket){
+            socket.on('chat message', function(msg, nameUserMess){
+                io.emit('chat message', msg, nameUserMess);
+            });
+
+            socket.on('chat message change', function (flag, nameUserMess) {
+                socket.broadcast.emit('typing user', nameUserMess)
             });
             socket.on('disconnect', function(){
                 console.log('user disconnected');
             });
+
+
         });
-    };
 
 
 
@@ -118,8 +110,6 @@ function router(app, express, passport,io) {
         failureRedirect : '/signUp', // redirect back to the signup page if there is an error
         failureFlash : true // allow flash messages
     }));
-    // process the signup form
-    // app.post('/signup', do all our passport stuff here);
 
     // =====================================
     // PROFILE SECTION =====================

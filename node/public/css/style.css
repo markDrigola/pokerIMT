@@ -671,7 +671,9 @@ main.mainAllBg .mainAll .pokerInfo p {
   font-weight: bold;
 }
 
-
+.typingUsers {
+  display: none;
+}
 
 
 

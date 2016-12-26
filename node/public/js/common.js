@@ -1,7 +1,7 @@
 'use strict';
 (function () {
     $(document).on('ready',function () {
-
+        var socket = io();
         //validator
 
         _("#formValidSignUp").init({
@@ -106,25 +106,45 @@
             $('.read-profile-button').show();
         });
 
+//cookie
+        function getCookie(name) {
+            var matches = document.cookie.match(new RegExp(
+                // "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+                name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+            ));
+            return matches ? decodeURIComponent(matches[1]) : undefined;
+        }
+        var nameUserCookie = getCookie('personId');
 
-
-
-
-
-
-
-
-        var socket = io();
         $('.addedMessage').submit(function(){
-            socket.emit('chat message', $('.textAdd').val(), socket.id);
+            socket.emit('chat message', $('.textAdd').val(), nameUserCookie);
             $('.textAdd').val('');
             return false;
         });
-        
-        socket.on('chat message', function(msg, nick){
-            console.log(msg)
-            $('#messages').append($('<li>').text(nick + ': ' + msg));
+
+        $('.textAdd').on('keydown', function () {
+            socket.emit('chat message change', true, nameUserCookie);
         });
+        socket.on('typing user', function (nameUserMess) {
+            var typingBlock = $('.typingUsers');
+
+            if(typingBlock.css('display') == 'none') {
+                typingBlock.text('User: ' + nameUserMess + ' is typing').show();
+            } else
+            if(typingBlock.css('display') == 'block') {
+                setTimeout(function () {
+                    typingBlock.fadeOut(300);
+                }, 1000)
+            }
+        });
+        
+        socket.on('chat message', function(msg,nameUserMess){
+            $('#messages').append($('<li>').text(nameUserMess + ': ' + msg));
+            return false;
+        });
+
+
+
 
         //>>>>>>>>>>>>>>>>>>ALL POKERS GAMES SCRIPT<<<<<<<<<<<<<<<<<<
         
