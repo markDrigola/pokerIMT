@@ -38,12 +38,19 @@ function router(app, express, passport,io) {
                 res.cookie('personId', decodeURIComponent(resetNickUser));
             }
 
-            res.render('template', {page: "game",
-                title: "game"});
+            res.render('template', {
+                page: "game",
+                title: "game"
+            });
+
         });
 
 // var
         io.on('connection', function(socket){
+            socket.on('user this chat', function (nick) {
+                socket.broadcast.emit('user connection', nick);
+            });
+
             socket.on('chat message', function(msg, nameUserMess){
                 io.emit('chat message', msg, nameUserMess);
             });
@@ -54,7 +61,6 @@ function router(app, express, passport,io) {
             socket.on('disconnect', function(){
                 console.log('user disconnected');
             });
-
 
         });
 

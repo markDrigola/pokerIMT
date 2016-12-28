@@ -675,7 +675,12 @@ main.mainAllBg .mainAll .pokerInfo p {
   display: none;
 }
 
-
+.all-users-online {
+  background: #fff;
+  width: 100%;
+  height: 400px;
+  padding: 0;
+}
 
 
 

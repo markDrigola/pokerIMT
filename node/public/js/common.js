@@ -4,6 +4,16 @@
         var socket = io();
         //validator
 
+        //cookie
+        function getCookie(name) {
+            var matches = document.cookie.match(new RegExp(
+                // "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+                name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+            ));
+            return matches ? decodeURIComponent(matches[1]) : undefined;
+        }
+        var nameUserCookie = getCookie('personId');
+
         _("#formValidSignUp").init({
             email: "[name=email]",
             password: "[name=password]"
@@ -70,6 +80,12 @@
             $('.mainAllBg').css({
                 'paddingTop': 0
             })
+
+            socket.emit('user this chat', nameUserCookie);
+            socket.on('user connection', function (nick) {
+                $('.all-users-online').append($('<li>').text(nick));
+                alert('User ' + nick + ' connection chat!');
+            })
         }
 
         if(this.location.pathname == '/profile') {
@@ -106,15 +122,7 @@
             $('.read-profile-button').show();
         });
 
-//cookie
-        function getCookie(name) {
-            var matches = document.cookie.match(new RegExp(
-                // "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-                name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-            ));
-            return matches ? decodeURIComponent(matches[1]) : undefined;
-        }
-        var nameUserCookie = getCookie('personId');
+
 
         $('.addedMessage').submit(function(){
             socket.emit('chat message', $('.textAdd').val(), nameUserCookie);
@@ -125,16 +133,20 @@
         $('.textAdd').on('keydown', function () {
             socket.emit('chat message change', true, nameUserCookie);
         });
+
+        var flagTyping = 0;
         socket.on('typing user', function (nameUserMess) {
             var typingBlock = $('.typingUsers');
 
-            if(typingBlock.css('display') == 'none') {
-                typingBlock.text('User: ' + nameUserMess + ' is typing').show();
-            } else
-            if(typingBlock.css('display') == 'block') {
-                setTimeout(function () {
-                    typingBlock.fadeOut(300);
-                }, 1000)
+            if(flagTyping === 0) {
+                typingBlock.text('User: ' + nameUserMess + ' is typing').fadeIn(1000, function () {
+                    flagTyping = 1;
+                    setTimeout(function () {
+                        typingBlock.fadeOut(200, function () {
+                            flagTyping = 0;
+                        })
+                    }, 3000)
+                });
             }
         });
         
@@ -142,6 +154,7 @@
             $('#messages').append($('<li>').text(nameUserMess + ': ' + msg));
             return false;
         });
+
 
 
 
