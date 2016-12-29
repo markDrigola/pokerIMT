@@ -39,7 +39,7 @@ function server(config) {
     http.listen(config.get('port'), function () {
         console.log('The magic happens on port ' + config.get('port'));
     });
-    router(app, express, passport,io);
+    router(app, express, passport,io,session);
 }
 
 module.exports = server;

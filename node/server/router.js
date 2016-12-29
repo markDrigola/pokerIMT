@@ -1,6 +1,6 @@
 var User = require('../models/user');
 
-function router(app, express, passport,io) {
+function router(app, express, passport,io,session) {
     //связываем express vs ejs
     app.set('view engine', 'ejs');
     app.use(express.static(__dirname + '/../public'));
@@ -30,12 +30,16 @@ function router(app, express, passport,io) {
 
 
         app.get('/game', isLoggedIn,  function (req, res) {
-            var resetNickUser = req.user.local.nick;
+            var resetInfokUser = req.user.local.nick,
+                resetUserId = req.user._id;
 
-            if(resetNickUser === undefined || resetNickUser === '') {
-                res.cookie('personId', decodeURIComponent('User not Logo'));
+            if(resetInfokUser === undefined || resetInfokUser === '') {
+                res.cookie('personId', 'User not Logo');
+                res.cookie('personId', encodeURIComponent(resetUserId));
             } else {
-                res.cookie('personId', decodeURIComponent(resetNickUser));
+                // res.cookie('personId', decodeURIComponent(resetUserId));
+                res.cookie('personId', encodeURIComponent(resetUserId));
+                res.cookie('personInfo', encodeURIComponent(resetInfokUser));
             }
 
             res.render('template', {
@@ -46,13 +50,29 @@ function router(app, express, passport,io) {
         });
 
 // var
+    var roomno = 1;
         io.on('connection', function(socket){
+            if(io.nsps['/'].adapter.rooms["room-"+roomno] && io.nsps['/'].adapter.rooms["room-"+roomno].length > 1)
+                roomno++;
+            socket.join("room-"+roomno);
+
+            io.sockets.in("room-"+roomno).emit('connectToRoom', "You are in room no. "+roomno);
+// console.log(io.sockets.adapter.rooms)
+// console.log(io.nsps['/'].adapter.rooms["room-"+roomno])
+                // socket.on('say to someone', function(id, msg){
+                //     socket.broadcast.to(id).emit('my message', msg);
+                // });
+
             socket.on('user this chat', function (nick) {
                 socket.broadcast.emit('user connection', nick);
             });
 
             socket.on('chat message', function(msg, nameUserMess){
-                io.emit('chat message', msg, nameUserMess);
+                User.findOne({_id:nameUserMess}, function (err, users) {
+                    var nowUserNick = users.local.nick;
+                    io.emit('chat message', msg, nowUserNick);
+                });
+
             });
 
             socket.on('chat message change', function (flag, nameUserMess) {
@@ -61,6 +81,9 @@ function router(app, express, passport,io) {
             socket.on('disconnect', function(){
                 console.log('user disconnected');
             });
+            socket.on('added id user', function (data) {
+                // console.log((data))
+            })
 
         });
 

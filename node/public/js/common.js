@@ -13,6 +13,8 @@
             return matches ? decodeURIComponent(matches[1]) : undefined;
         }
         var nameUserCookie = getCookie('personId');
+        var personInfo = getCookie('personInfo');
+        var userInfoSer = decodeURIComponent(personInfo);
 
         _("#formValidSignUp").init({
             email: "[name=email]",
@@ -84,7 +86,10 @@
             socket.emit('user this chat', nameUserCookie);
             socket.on('user connection', function (nick) {
                 $('.all-users-online').append($('<li>').text(nick));
-                alert('User ' + nick + ' connection chat!');
+                //alert('User ' + nick + ' connection chat!');
+            })
+            socket.on('connectToRoom', function (id,data) {
+                console.log(data + ' id is ' + id);
             })
         }
 
@@ -151,7 +156,8 @@
         });
         
         socket.on('chat message', function(msg,nameUserMess){
-            $('#messages').append($('<li>').text(nameUserMess + ': ' + msg));
+            var usersId = decodeURIComponent(nameUserMess);
+            $('#messages').append($('<li>').text(usersId + ': ' + msg));
             return false;
         });
 
