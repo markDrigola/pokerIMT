@@ -81,16 +81,18 @@
         if(this.location.pathname == '/game') {
             $('.mainAllBg').css({
                 'paddingTop': 0
-            })
+            });
 
             socket.emit('user this chat', nameUserCookie);
             socket.on('user connection', function (nick) {
                 $('.all-users-online').append($('<li>').text(nick));
                 //alert('User ' + nick + ' connection chat!');
-            })
+            });
             socket.on('connectToRoom', function (id,data) {
                 console.log(data + ' id is ' + id);
-            })
+            });
+
+
         }
 
         if(this.location.pathname == '/profile') {
@@ -129,12 +131,19 @@
 
 
 
-        $('.addedMessage').submit(function(){
-            socket.emit('chat message', $('.textAdd').val(), nameUserCookie);
-            $('.textAdd').val('');
-            return false;
-        });
 
+
+
+//CHAT CHAT CHAT CHAT CHAT CHAT CHAT CHAT CHAT CHAT CHAT CHAT CHAT CHAT CHAT CHAT CHAT CHAT CHAT CHAT CHAT CHAT CHAT CHAT
+
+
+
+
+
+
+
+
+//typing chat users ----------------------------------------------------------------------------------------------------|
         $('.textAdd').on('keydown', function () {
             socket.emit('chat message change', true, nameUserCookie);
         });
@@ -150,16 +159,100 @@
                         typingBlock.fadeOut(200, function () {
                             flagTyping = 0;
                         })
-                    }, 3000)
+                    }, 3000);
                 });
             }
         });
-        
-        socket.on('chat message', function(msg,nameUserMess){
-            var usersId = decodeURIComponent(nameUserMess);
+//----------------------------------------------------------------------------------------------------------------------|
+
+
+
+//add user -------------------------------------------------------------------------------------------------------------|
+        if(this.location.pathname === '/game') {
+            socket.on('connect', function(){
+                // call the server-side function 'adduser' and send one parameter (value of prompt)
+                socket.emit('adduser', nameUserCookie);
+            });
+            socket.emit('all user list');
+            socket.on('all user list added', function (usersList) {
+                $('.all-users-online').empty();
+                for(var key in usersList) {
+                    $('.all-users-online').append('<b>'+ usersList[key] + '</b><br>');
+                }
+            });
+        }
+
+//----------------------------------------------------------------------------------------------------------------------|
+
+        // socket.on('sendchat', function (data) {
+        //     // we tell the client to execute 'updatechat' with 2 parameters
+        //     io.sockets.in(socket.room).emit('updatechat', socket.username, data);
+        // });
+
+
+
+        socket.on('updatechat users', function (username, data) {
+            $('.all-users-online').append('<b>'+username + ':</b> ' + data + '<br>');
+        });
+
+//disconect users ======================================================================================================|
+        socket.on('updatechat users disc', function (username, data) {
+            console.log(username);
+            console.log(data);
+            //$('.all-users-online').append('<b>'+username + ':</b> ' + data + '<br>');
+        });
+
+        // listener, whenever the server emits 'updaterooms', this updates the room the client is in
+        socket.on('updaterooms', function(rooms, current_room) {
+            $('#rooms').empty();
+            $.each(rooms, function(key, value) {
+                if(value == current_room){
+                    $('#rooms').append('<div>' + value + '</div>');
+                }
+                else {
+                    $('#rooms').append('<div><a href="#" onclick="switchRoom(\''+value+'\')">' + value + '</a></div>');
+                }
+            });
+        });
+
+
+
+//User disconnect ======================================================================================================|
+//         socket.on('user disconnect',function () {
+//             console.log('user disc')
+//              socket.emit('all user list', nameUserCookie);
+//             console.log('user disc 2222')
+//         });
+
+
+
+
+
+
+
+
+
+//Chat message ---------------------------------------------------------------------------------------------------------|
+        $('.addedMessage').submit(function(){
+            socket.emit('sendchat', $('.textAdd').val(), nameUserCookie);
+            $('.textAdd').val('');
+            return false;
+        });
+
+        socket.on('updatechat', function(msg,idUserMess){
+            var usersId = decodeURIComponent(idUserMess);
             $('#messages').append($('<li>').text(usersId + ': ' + msg));
             return false;
         });
+//----------------------------------------------------------------------------------------------------------------------|
+
+
+
+
+//----------------------------------------------------------------------------------------------------------------------|
+//----------------------------------------------------------------------------------------------------------------------|
+//----------------------------------------------------------------------------------------------------------------------|
+
 
 
 

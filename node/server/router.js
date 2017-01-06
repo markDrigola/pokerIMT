@@ -48,43 +48,77 @@ function router(app, express, passport,io,session) {
             });
 
         });
-
+    var usernames = {};
+    var rooms = ['room1','room2','room3'];
 // var
-    var roomno = 1;
+    //var roomno = 1;
         io.on('connection', function(socket){
-            if(io.nsps['/'].adapter.rooms["room-"+roomno] && io.nsps['/'].adapter.rooms["room-"+roomno].length > 1)
-                roomno++;
-            socket.join("room-"+roomno);
 
-            io.sockets.in("room-"+roomno).emit('connectToRoom', "You are in room no. "+roomno);
-// console.log(io.sockets.adapter.rooms)
-// console.log(io.nsps['/'].adapter.rooms["room-"+roomno])
-                // socket.on('say to someone', function(id, msg){
-                //     socket.broadcast.to(id).emit('my message', msg);
-                // });
+//added user -----------------------------------------------------------------------------------------------------------|
+            socket.on('adduser', function(username){
+                var nameUser;
+                User.findOne({_id:username},function (err, users) {
+                    if(users.local.nick === null || users.local.nick === undefined) {
+                        nameUser = 'Not name user ';
+                        socket.username = nameUser;
+                    } else {
+                        nameUser = users.local.nick;
+                        socket.username = nameUser;
+                        usernames[username] = users.local.nick;
+                    }
+                    socket.room = 'room1';
+                    // add the client's username to the global list
 
-            socket.on('user this chat', function (nick) {
-                socket.broadcast.emit('user connection', nick);
-            });
-
-            socket.on('chat message', function(msg, nameUserMess){
-                User.findOne({_id:nameUserMess}, function (err, users) {
-                    var nowUserNick = users.local.nick;
-                    io.emit('chat message', msg, nowUserNick);
+                    // send client to room 1
+                    socket.join('room1');
+                    // echo to client they've connected
+                    socket.emit('updatechat users', 'SERVER', 'you have connected to room1');
+                    // echo to room 1 that a person has connected to their room
+                    socket.broadcast.to('room1').emit('updatechat users', 'SERVER', socket.username + ' has connected to this room');
+                    socket.emit('updaterooms', rooms, 'room1');
                 });
-
             });
 
-            socket.on('chat message change', function (flag, nameUserMess) {
-                socket.broadcast.emit('typing user', nameUserMess)
+            socket.on('sendchat', function (data) {
+                // we tell the client to execute 'updatechat' with 2 parameters
+                io.sockets.in(socket.room).emit('updatechat',data, socket.username);
             });
+//----------------------------------------------------------------------------------------------------------------------|
+
+
+
+//User list ------------------------------------------------------------------------------------------------------------|
+            socket.on('all user list', function () {
+                io.sockets.in(socket.room).emit('all user list added',usernames);
+            });
+//----------------------------------------------------------------------------------------------------------------------|
+
+
+
+            // socket.on('chat message', function (msg, idUser) {
+            //     //Ищем по айдишнику юзера в базе
+            //     var nameUser;
+            //     User.findOne({_id:idUser},function (err, users) {
+            //         if(users.local.nick === null || users.local.nick === undefined) {
+            //             nameUser = 'Not name user ';
+            //         } else {
+            //             nameUser = users.local.nick;
+            //         }
+            //         // Отправляем смс всем юзерам
+            //         io.emit('chat messages',msg, nameUser);
+            //     });
+            // });
+            // socket.on('chat message change', function (flag, nameUserMess) {
+            //     socket.broadcast.emit('typing user', nameUserMess)
+            // });
             socket.on('disconnect', function(){
-                console.log('user disconnected');
+                delete usernames[socket.username];
+                io.sockets.emit('updateusers', usernames);
+                // echo globally that this client has left
+                socket.broadcast.emit('updatechat users disc', 'SERVER', socket.username + ' has disconnected');
+                socket.broadcast.in(socket.room).emit('all user list added',usernames);
+                socket.leave(socket.room);
             });
-            socket.on('added id user', function (data) {
-                // console.log((data))
-            })
-
         });
 
 
