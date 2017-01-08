@@ -48,7 +48,7 @@ function router(app, express, passport,io,session) {
             });
 
         });
-    var usernames = {};
+    var usernamesAll = {};
     var rooms = ['room1','room2','room3'];
 // var
     //var roomno = 1;
@@ -64,7 +64,7 @@ function router(app, express, passport,io,session) {
                     } else {
                         nameUser = users.local.nick;
                         socket.username = nameUser;
-                        usernames[username] = users.local.nick;
+                        usernamesAll[username] = users.local.nick;
                     }
                     socket.room = 'room1';
                     // add the client's username to the global list
@@ -72,9 +72,9 @@ function router(app, express, passport,io,session) {
                     // send client to room 1
                     socket.join('room1');
                     // echo to client they've connected
-                    socket.emit('updatechat users', 'SERVER', 'you have connected to room1');
+                    io.emit('updatechat users', nameUser);
                     // echo to room 1 that a person has connected to their room
-                    socket.broadcast.to('room1').emit('updatechat users', 'SERVER', socket.username + ' has connected to this room');
+                    // socket.broadcast.to('room1').emit('updatechat users', 'SERVER', socket.username + ' has connected to this room');
                     socket.emit('updaterooms', rooms, 'room1');
                 });
             });
@@ -88,9 +88,12 @@ function router(app, express, passport,io,session) {
 
 
 //User list ------------------------------------------------------------------------------------------------------------|
-            socket.on('all user list', function () {
-                io.sockets.in(socket.room).emit('all user list added',usernames);
+            socket.on('list users', function () {
+                socket.emit('list users added', usernamesAll);
             });
+//             socket.on('all user list', function () {
+//                 io.sockets.in(socket.room).emit('all user list added',usernames);
+//             });
 //----------------------------------------------------------------------------------------------------------------------|
 
 
@@ -108,15 +111,19 @@ function router(app, express, passport,io,session) {
             //         io.emit('chat messages',msg, nameUser);
             //     });
             // });
-            // socket.on('chat message change', function (flag, nameUserMess) {
-            //     socket.broadcast.emit('typing user', nameUserMess)
-            // });
+            socket.on('chat message change', function (flag, nameUserMess) {
+                socket.broadcast.emit('typing user', socket.username);
+            });
             socket.on('disconnect', function(){
-                delete usernames[socket.username];
-                io.sockets.emit('updateusers', usernames);
+                console.log(usernamesAll);
+                console.log(usernamesAll[socket.username]);
+                delete usernamesAll[socket.username];
+                console.log(usernamesAll);
+                // io.sockets.emit('updateusers', usernames);
+                io.sockets.emit('living users',socket.username );
                 // echo globally that this client has left
-                socket.broadcast.emit('updatechat users disc', 'SERVER', socket.username + ' has disconnected');
-                socket.broadcast.in(socket.room).emit('all user list added',usernames);
+                //socket.broadcast.in(socket.room).emit('updatechat users disc', socket.username);
+                //socket.broadcast.in(socket.room).emit('all user list added',usernames);
                 socket.leave(socket.room);
             });
         });
@@ -228,7 +235,6 @@ function router(app, express, passport,io,session) {
                 }
                 res.send('error');
             });
-            console.log(user)
         })
     });
     // User.find(function (err, userAll) {

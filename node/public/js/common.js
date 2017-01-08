@@ -91,7 +91,7 @@
             socket.on('connectToRoom', function (id,data) {
                 console.log(data + ' id is ' + id);
             });
-
+            //socket.emit('emit user list added');
 
         }
 
@@ -173,14 +173,26 @@
                 // call the server-side function 'adduser' and send one parameter (value of prompt)
                 socket.emit('adduser', nameUserCookie);
             });
-            socket.emit('all user list');
-            socket.on('all user list added', function (usersList) {
-                $('.all-users-online').empty();
-                for(var key in usersList) {
-                    $('.all-users-online').append('<b>'+ usersList[key] + '</b><br>');
+            //Получение списка пользователей при заходе на страницу игры
+            socket.emit('list users');
+            socket.on('list users added' , function (users) {
+                for(var key in users) {
+                    if(users[key] !== '') {
+                        $('.all-users-online').append('<li>'+ users[key] + '</li>');
+                    }
                 }
             });
         }
+
+        // socket.emit('all user list');
+        // socket.on('all user list added', function (usersList) {
+        //     // $('.all-users-online').empty();
+        //     for(var key in usersList) {
+        //         if(usersList[key] !== '') {
+        //             $('.all-users-online').append('<li>'+ usersList[key] + '</li>');
+        //         }
+        //     }
+        // });
 
 //----------------------------------------------------------------------------------------------------------------------|
 
@@ -191,16 +203,25 @@
 
 
 
-        socket.on('updatechat users', function (username, data) {
-            $('.all-users-online').append('<b>'+username + ':</b> ' + data + '<br>');
+        socket.on('updatechat users', function (username) {
+            $('.all-users-online').append('<li>' + username + '</li>');
         });
 
 //disconect users ======================================================================================================|
-        socket.on('updatechat users disc', function (username, data) {
-            console.log(username);
-            console.log(data);
-            //$('.all-users-online').append('<b>'+username + ':</b> ' + data + '<br>');
+        //Пользователь покидает чат
+        socket.on('living users', function (nameUser) {
+            $('.all-users-online').children('li').each(function () {
+                if($(this).text() === nameUser) {
+                    $(this).remove();
+                }
+            });
         });
+//         socket.on('updatechat users disc', function (username) {
+//             $('.all-users-online').children('li').each( function () {
+//                 console.log($(this).text());
+//             });
+//             //$('.all-users-online').append('<b>'+username + ':</b> ' + data + '<br>');
+//         });
 
         // listener, whenever the server emits 'updaterooms', this updates the room the client is in
         socket.on('updaterooms', function(rooms, current_room) {
