@@ -116,7 +116,7 @@ function router(app, express, passport,io,session) {
             });
             socket.on('disconnect', function(){
                 console.log(usernamesAll);
-                console.log(usernamesAll[socket.username]);
+                console.log(socket.username);
                 delete usernamesAll[socket.username];
                 console.log(usernamesAll);
                 // io.sockets.emit('updateusers', usernames);
