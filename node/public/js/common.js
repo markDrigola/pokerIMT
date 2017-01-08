@@ -174,14 +174,7 @@
                 socket.emit('adduser', nameUserCookie);
             });
             //Получение списка пользователей при заходе на страницу игры
-            // socket.emit('list users');
-            // socket.on('list users added' , function (users) {
-            //     for(var key in users) {
-            //         if(users[key] !== '') {
-            //             $('.all-users-online').append('<li>'+ users[key] + '</li>');
-            //         }
-            //     }
-            // });
+
         }
 
         // socket.emit('all user list');
@@ -200,13 +193,19 @@
         //     // we tell the client to execute 'updatechat' with 2 parameters
         //     io.sockets.in(socket.room).emit('updatechat', socket.username, data);
         // });
-
-
-
-        socket.on('updatechat users', function (username) {
-            $('.all-users-online').empty();
-            $('.all-users-online').append('<li>' + username + '</li>');
+        socket.emit('list users');
+        socket.on('list users added' , function (users) {
+            for(var key in users) {
+                if(users[key] !== '') {
+                    $('.all-users-online').append('<li>'+ users[key] + '</li>');
+                }
+            }
         });
+
+
+        // socket.on('updatechat users', function (username) {
+        //     $('.all-users-online').append('<li>' + username + '</li>');
+        // });
 
 //disconect users ======================================================================================================|
         //Пользователь покидает чат
