@@ -204,7 +204,7 @@
 
 
         socket.on('updatechat users', function (username) {
-            console.log(username);
+            $('.all-users-online').empty();
             $('.all-users-online').append('<li>' + username + '</li>');
         });
 
