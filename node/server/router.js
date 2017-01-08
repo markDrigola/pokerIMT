@@ -117,7 +117,12 @@ function router(app, express, passport,io,session) {
             socket.on('disconnect', function(){
                 console.log(usernamesAll);
                 console.log(socket.username);
-                delete usernamesAll[socket.username];
+                for (var key in usernamesAll) {
+                    if(usernamesAll[key] === socket.username) {
+                        delete usernamesAll[key];
+                    }
+                }
+                //delete usernamesAll[socket.username];
                 console.log(usernamesAll);
                 // io.sockets.emit('updateusers', usernames);
                 io.sockets.emit('living users',socket.username );
