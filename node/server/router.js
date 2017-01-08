@@ -53,7 +53,7 @@ function router(app, express, passport,io,session) {
 // var
     //var roomno = 1;
         io.on('connection', function(socket){
-
+        
 //added user -----------------------------------------------------------------------------------------------------------|
             socket.on('adduser', function(username){
                 var nameUser;
@@ -73,6 +73,7 @@ function router(app, express, passport,io,session) {
                     socket.join('room1');
                     // echo to client they've connected
                     io.emit('updatechat users', nameUser);
+                    console.log(nameUser);
                     // echo to room 1 that a person has connected to their room
                     // socket.broadcast.to('room1').emit('updatechat users', 'SERVER', socket.username + ' has connected to this room');
                     socket.emit('updaterooms', rooms, 'room1');
@@ -115,15 +116,12 @@ function router(app, express, passport,io,session) {
                 socket.broadcast.emit('typing user', socket.username);
             });
             socket.on('disconnect', function(){
-                console.log(usernamesAll);
-                console.log(socket.username);
                 for (var key in usernamesAll) {
                     if(usernamesAll[key] === socket.username) {
                         delete usernamesAll[key];
                     }
                 }
                 //delete usernamesAll[socket.username];
-                console.log(usernamesAll);
                 // io.sockets.emit('updateusers', usernames);
                 io.sockets.emit('living users',socket.username );
                 // echo globally that this client has left
