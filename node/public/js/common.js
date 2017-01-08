@@ -174,14 +174,14 @@
                 socket.emit('adduser', nameUserCookie);
             });
             //Получение списка пользователей при заходе на страницу игры
-            socket.emit('list users');
-            socket.on('list users added' , function (users) {
-                for(var key in users) {
-                    if(users[key] !== '') {
-                        $('.all-users-online').append('<li>'+ users[key] + '</li>');
-                    }
-                }
-            });
+            // socket.emit('list users');
+            // socket.on('list users added' , function (users) {
+            //     for(var key in users) {
+            //         if(users[key] !== '') {
+            //             $('.all-users-online').append('<li>'+ users[key] + '</li>');
+            //         }
+            //     }
+            // });
         }
 
         // socket.emit('all user list');
