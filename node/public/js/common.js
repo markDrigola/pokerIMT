@@ -203,9 +203,9 @@
         });
 
 
-        socket.on('updatechat users', function (username) {
-            $('.all-users-online').append('<li>' + username + '</li>');
-        });
+        // socket.on('updatechat users', function (username) {
+        //     $('.all-users-online').append('<li>' + username + '</li>');
+        // });
 
 //disconect users ======================================================================================================|
         //Пользователь покидает чат
