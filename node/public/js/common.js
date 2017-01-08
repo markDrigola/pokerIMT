@@ -195,6 +195,7 @@
         // });
         socket.emit('list users');
         socket.on('list users added' , function (users) {
+            $('.all-users-online').empty();
             for(var key in users) {
                 if(users[key] !== '') {
                     $('.all-users-online').append('<li>'+ users[key] + '</li>');
