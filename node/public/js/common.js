@@ -173,10 +173,12 @@
                 // call the server-side function 'adduser' and send one parameter (value of prompt)
                 socket.emit('adduser', nameUserCookie);
             });
+            //Юзеры с базы, второй вариант с занесением в базу отдельной схемой
+            //socket.emit('list user active chat emit');
+
             //Получение списка пользователей при заходе на страницу игры
 
         }
-
         // socket.emit('all user list');
         // socket.on('all user list added', function (usersList) {
         //     // $('.all-users-online').empty();
@@ -193,6 +195,9 @@
         //     // we tell the client to execute 'updatechat' with 2 parameters
         //     io.sockets.in(socket.room).emit('updatechat', socket.username, data);
         // });
+
+
+//Лист юзеров с помощью сокетов ========================================================================================|
         socket.emit('list users');
         socket.on('list users added' , function (users) {
             $('.all-users-online').empty();
@@ -202,6 +207,7 @@
                 }
             }
         });
+
 
 
         // socket.on('updatechat users', function (username) {

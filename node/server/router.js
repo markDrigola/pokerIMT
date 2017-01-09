@@ -1,4 +1,5 @@
 var User = require('../models/user');
+var UserChat = require('../models/chatOnline');
 
 function router(app, express, passport,io,session) {
     //связываем express vs ejs
@@ -30,22 +31,46 @@ function router(app, express, passport,io,session) {
 
 
         app.get('/game', isLoggedIn,  function (req, res) {
-            var resetInfokUser = req.user.local.nick,
-                resetUserId = req.user._id;
+            var resetInforUser = req.user.local.nick,
+                resetUserId = req.user._id,
+                listUser;
 
-            if(resetInfokUser === undefined || resetInfokUser === '') {
+            if(resetInforUser === undefined || resetInforUser === '') {
                 res.cookie('personId', 'User not Logo');
                 res.cookie('personId', encodeURIComponent(resetUserId));
             } else {
                 // res.cookie('personId', decodeURIComponent(resetUserId));
                 res.cookie('personId', encodeURIComponent(resetUserId));
-                res.cookie('personInfo', encodeURIComponent(resetInfokUser));
+                res.cookie('personInfo', encodeURIComponent(resetInforUser));
             }
 
-            res.render('template', {
-                page: "game",
-                title: "game"
+
+            //Юзер который зашел на игру - становиться активым в чате и записываем в схемму
+            var newStatusUser = new UserChat({
+                user: resetInforUser,
+                status: true
             });
+            UserChat.findOne({user:resetInforUser}, function (err, users) {
+                if(users !== null) {
+                    return;
+                } else {
+                    newStatusUser.save(function (err) {
+
+                    });
+                }
+            });
+            //UserChat.find(function (err,users) {
+                //socket.on('list user active chat emit',function () {
+
+                res.render('template', {
+                    page: "game",
+                    title: "game",
+                    //list: users
+                });
+                //});
+            //});
+
+
 
         });
     var usernamesAll = {};
@@ -53,7 +78,10 @@ function router(app, express, passport,io,session) {
 // var
     //var roomno = 1;
         io.on('connection', function(socket){
-        
+
+
+
+
 //added user -----------------------------------------------------------------------------------------------------------|
             socket.on('adduser', function(username){
                 var nameUser;
@@ -69,6 +97,7 @@ function router(app, express, passport,io,session) {
                     socket.room = 'room1';
                     // add the client's username to the global list
 
+
                     // send client to room 1
                     socket.join('room1');
                     // echo to client they've connected
@@ -76,7 +105,10 @@ function router(app, express, passport,io,session) {
                     // echo to room 1 that a person has connected to their room
                     // socket.broadcast.to('room1').emit('updatechat users', 'SERVER', socket.username + ' has connected to this room');
                     socket.emit('updaterooms', rooms, 'room1');
+                    //userStatus(socket.username);
                 });
+
+
             });
 
             socket.on('sendchat', function (data) {
