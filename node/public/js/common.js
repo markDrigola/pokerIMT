@@ -287,7 +287,100 @@
 
 
         //>>>>>>>>>>>>>>>>>>ALL POKERS GAMES SCRIPT<<<<<<<<<<<<<<<<<<
-        
+
+var self;
+        function ConstructorPlayer(data) {
+            // console.log(data)
+            self = this;
+            // this.name = data.name;
+            // this.firstCard = data.firstCard;
+            // this.secondCard = data.secondCard;
+            var elem = document.body;
+            elem.onclick = function (e) {
+                var event = e || window.event,
+                    target = event.target || event.srcElement;
+                self.randomCard();
+            }
+
+        }
+
+
+        ConstructorPlayer.prototype.randomCard = function () {
+            socket.emit('obt user info', nameUserCookie );
+            socket.on('obt server info', function (data,cards) {
+                console.log(cards)
+            });
+        };
+        var players = new ConstructorPlayer();
+        $('.rand').on('click', function () {
+            players.randomCard();
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        //var playerConstr = new ConstructorPlayer()
         //Card deck
         var cardsArr = [
     ['cardsT1',
@@ -453,10 +546,10 @@
             fourthCards = $('.fourthCards'),
             fifthCards = $('.fivethCards');
 
-        $('.rand').on('click', function () {
-            dealerDistribution();
-            self.rate(firstPlayer.points());
-        });
+        // $('.rand').on('click', function () {
+        //     dealerDistribution();
+        //     self.rate(firstPlayer.points());
+        // });
 
         // Displacement blands
         function blainsDisplacement() {
