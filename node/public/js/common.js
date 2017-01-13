@@ -311,10 +311,41 @@ var self;
                 console.log(cards)
             });
         };
-        var players = new ConstructorPlayer();
-        $('.rand').on('click', function () {
-            players.randomCard();
+
+
+//КОНСТРУКТОР ИГРЫ
+        function GameConstructor (data) {
+            this.data = data;
+        }
+
+        GameConstructor.prototype.initGame = function () {
+
+        };
+
+        $('.start-game').on('click', function () {
+            socket.emit('star game', nameUserCookie);
+            socket.on('create game', function (data) {
+                var newGame = new GameConstructor(data);
+                newGame.obtainePlayer1();
+            });
         });
+
+        GameConstructor.prototype.obtainePlayer1 = function () {
+            var player = this.data.players.player1;
+            console.log(player)
+        };
+
+
+        // var players = new ConstructorPlayer();
+        // $('.rand').on('click', function () {
+        //     players.randomCard();
+        // });
+
+
+        // socket.on('cards obt', function (cards) {
+        //     console.log(cards)
+        // });
+
 
 
 
