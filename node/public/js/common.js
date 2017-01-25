@@ -329,6 +329,11 @@ var self;
                 newGame.obtainePlayer1();
             });
         });
+        //Садим игрока за стол
+        $('.sit-at-the-table').on('click', function () {
+            socket.emit('sit-at-the-table', nameUserCookie);
+
+        });
 
         GameConstructor.prototype.obtainePlayer1 = function () {
             var player = this.data.players.player1;

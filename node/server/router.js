@@ -374,7 +374,25 @@ Game.remove({}, function (err) {});
                 });
             });
 
+            //Посадка игрока за стол
+            socket.on('sit-at-the-table', function (userId) {
+                var cccounter = 0;
+                Game.find(function (err, listGame) {
+                    cccounter++;
+                    var objFit = listGame[0];
+                    // console.log(objFit.players)
+                    for( var key in objFit.players) {
+                        // console.log(typeof(objFit.players[key]));
+                        if(typeof(objFit.players[key]) ===  'object') {
+                            console.log(objFit.players[key].tree.players)
+                        }
+                    }
+                    //console.log(listGame[0].players.player2.id = userId)
+                    // console.log(listGame[0].players);
+                });
 
+                 // io.emit()
+            });
             // socket.on('chat message', function (msg, idUser) {
             //     //Ищем по айдишнику юзера в базе
             //     var nameUser;
