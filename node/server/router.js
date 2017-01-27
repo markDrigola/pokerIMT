@@ -377,16 +377,23 @@ Game.remove({}, function (err) {});
             //Посадка игрока за стол
             socket.on('sit-at-the-table', function (userId) {
                 var cccounter = 0;
-                Game.find(function (err, listGame) {
-                    cccounter++;
-                    var objFit = listGame[0];
-                    // console.log(objFit.players)
-                    for( var key in objFit.players) {
-                        // console.log(typeof(objFit.players[key]));
-                        if(typeof(objFit.players[key]) ===  'object') {
-                            console.log(objFit.players[key].tree.players)
-                        }
+                Game.findOne(function (err, listGame) {
+                    var objFit = listGame.players;
+                    if(objFit.player1.id == '') {
+                        objFit.player1.id = userId;
+                    } else if(objFit.player2.id == ''){
+                        objFit.player2.id = userId;
+                        console.log(objFit.player2.id);
                     }
+                    // console.log(objFit.players)
+                    // for(var key in listGame.players) {
+                    //     console.log(listGame.players[key]);
+                    //     if(listGame.players[key] == 'player1') {
+                    //         //objFit[key].id = userId;
+                    //         console.log(objFit[key]);
+                    //
+                    //     }
+                    // }
                     //console.log(listGame[0].players.player2.id = userId)
                     // console.log(listGame[0].players);
                 });
