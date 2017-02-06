@@ -330,8 +330,16 @@ var self;
             });
         });
         //Садим игрока за стол
+
         $('.sit-at-the-table').on('click', function () {
             socket.emit('sit-at-the-table', nameUserCookie);
+        });
+        $('.baza-test').on('click', function () {
+            socket.emit('baza-test');
+
+        });
+        $('.baza-exit').on('click', function () {
+            socket.emit('baza-exit', nameUserCookie);
 
         });
 
@@ -353,9 +361,22 @@ var self;
 
 
 
+        socket.on('all-table', function () {
+            alert('Все места заняты');
+        });
 
-
-
+        socket.on('user-sid-tab1', function (userInfo1) {
+            console.log(userInfo1);
+        });
+        socket.on('user-sid-tab2', function (userInfo2) {
+            console.log(userInfo2);
+        });
+        // socket.on('user-sid-tab3', function (userInfo3) {
+        //     console.log(userInfo3);
+        // });
+        // socket.on('user-sid-tab4', function (userInfo4) {
+        //     console.log(userInfo4);
+        // });
 
 
 

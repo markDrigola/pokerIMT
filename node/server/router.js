@@ -159,7 +159,7 @@ function router(app, express, passport,io,session) {
 
 
 
-Game.remove({}, function (err) {});
+// Game.remove({}, function (err) {});
             //СТАРТ ИГРЫ
             socket.on('star game',function (resetUserId) {
                 Game.find(function (err, listGame) {
@@ -377,14 +377,64 @@ Game.remove({}, function (err) {});
             //Посадка игрока за стол
             socket.on('sit-at-the-table', function (userId) {
                 var cccounter = 0;
+
                 Game.findOne(function (err, listGame) {
                     var objFit = listGame.players;
-                    if(objFit.player1.id == '') {
-                        objFit.player1.id = userId;
-                    } else if(objFit.player2.id == ''){
-                        objFit.player2.id = userId;
-                        console.log(objFit.player2.id);
+                    if(userId === objFit.player1.id || userId === objFit.player2.id || userId === objFit.player3.id || userId === objFit.player4.id ) {
+                        return false;
                     }
+                    if(objFit.player1.id !== '' && objFit.player2.id !== '' && objFit.player3.id !== '' && objFit.player4.id !== '') {
+                        socket.emit('all-table');
+                    }
+                    if(objFit.player2.id === '') {
+                        objFit.player1.id = userId;
+                        savedRetGameOne(objFit.player1);
+                    } else {
+                        if(objFit.player2.id === '' ) {
+                            objFit.player2.id = userId;
+                            savedRet(objFit.player2);
+                            // socket.emit('user-sid-tab2', objFit.player2);
+                        } else if(objFit.player3.id === '') {
+                            objFit.player3.id = userId;
+                            savedRet(objFit.player3);
+                            // socket.emit('user-sid-tab3', objFit.player3);
+                        } else if(objFit.player4.id === '') {
+                            objFit.player4.id = userId;
+                            savedRet(objFit.player4);
+                            // socket.emit('user-sid-tab4', objFit.player4);
+                        }
+                    }
+
+                    function savedRetGameOne(createrUser) {
+                        objFit.save(function (err) {
+                            if(!err) {
+                                socket.emit('user-sid-tab1', createrUser);
+                            }
+                        });
+                    }
+                    function savedRet(userInfo) {
+                        objFit.save(function (err) {
+                            if(!err) {
+                                socket.emit('user-sid-tab2', userInfo);
+                            }
+                        });
+                    }
+
+                    // objFit.remove();
+                    // objFit.save(function (err) {
+                    //     if(!err) {
+                    //
+                    //         // io.emit('create game', gameCreate);
+                    //     }
+                    // });
+                    // for(var key in objFit) {
+                    //
+                    //     if(key === 'player1') {
+                    //         console.log(objFit['player1'])
+                    //     }
+                    //     // console.log(objFit)
+                    // }
+
                     // console.log(objFit.players)
                     // for(var key in listGame.players) {
                     //     console.log(listGame.players[key]);
@@ -399,6 +449,32 @@ Game.remove({}, function (err) {});
                 });
 
                  // io.emit()
+            });
+
+            socket.on('baza-test', function () {
+                // console.log('ok')
+                Game.find(function (err, test) {
+                    console.log(test);
+                })
+            });
+
+            socket.on('baza-exit', function (idExit) {
+                console.log(idExit)
+                Game.findOne(function (err, list) {
+                    if(list.players.player1.id === idExit) {
+                        list.players.player1.id = '';
+                    }
+                    if(list.players.player2.id === idExit) {
+                        list.players.player2.id = '';
+                    }
+                    if(list.players.player3.id === idExit) {
+                        list.players.player3.id = '';
+                    }
+                    if(list.players.player4.id === idExit) {
+                        list.players.player4.id = '';
+                    }
+                    list.save();
+                })
             });
             // socket.on('chat message', function (msg, idUser) {
             //     //Ищем по айдишнику юзера в базе
